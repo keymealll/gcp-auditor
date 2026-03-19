@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+
+# Environment variables
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+GCPGoat/
+
+# Type checking
+.mypy_cache/
+
+# Linting
+.ruff_cache/
+
+# Reports (generated output, not source)
+*.html
+!src/cloud_audit/reports/templates/*.html.j2
+
+# Internal / local-only files (never push)
+CLAUDE.md
+ROADMAP.md
+AGENTS.md
+
+# OS
+.DS_Store
+Thumbs.db

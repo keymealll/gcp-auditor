@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cloud Audit Report — {{ report.provider.upper() }} {{ report.account_id }}</title>
+<style>
+  :root {
+    --bg: #0a0b0d;
+    --bg-card: #111318;
+    --border: #1e2028;
+    --text: #e4e6eb;
+    --text-dim: #8b8f98;
+    --teal: #2dd4bf;
+    --red: #ef4444;
+    --orange: #f59e0b;
+    --cyan: #06b6d4;
+    --green: #22c55e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 40px 20px;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  /* Header */
+  .header {
+    text-align: center;
+    padding: 40px 0 32px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+  }
+
+  .header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+
+  .header .meta {
+    color: var(--text-dim);
+    font-size: 14px;
+  }
+
+  .header .meta span { margin: 0 8px; }
+
+  /* Score */
+  .score-section {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+  }
+
+  .score-ring {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    font-weight: 700;
+  }
+
+  .score-good { border: 4px solid var(--green); color: var(--green); }
+  .score-warn { border: 4px solid var(--orange); color: var(--orange); }
+  .score-bad { border: 4px solid var(--red); color: var(--red); }
+
+  /* Summary cards */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .summary-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .summary-card .number {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--teal);
+  }
+
+  .summary-card .label {
+    font-size: 13px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 4px;
+  }
+
+  /* Severity badges */
+  .severity {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .severity-critical { background: rgba(239,68,68,0.15); color: var(--red); }
+  .severity-high { background: rgba(239,68,68,0.1); color: #f87171; }
+  .severity-medium { background: rgba(245,158,11,0.12); color: var(--orange); }
+  .severity-low { background: rgba(6,182,212,0.12); color: var(--cyan); }
+  .severity-info { background: rgba(139,143,152,0.1); color: var(--text-dim); }
+
+  /* Category badges */
+  .category {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+
+  /* Findings */
+  .section-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 40px 0 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .finding {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 12px;
+    transition: border-color 0.2s;
+  }
+
+  .finding:hover { border-color: rgba(45,212,191,0.2); }
+
+  .finding-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+
+  .finding-title {
+    font-size: 15px;
+    font-weight: 600;
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .finding-resource {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    background: rgba(255,255,255,0.04);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  .finding-body { font-size: 14px; color: var(--text-dim); margin-bottom: 10px; }
+
+  .finding-recommendation {
+    font-size: 13px;
+    padding: 10px 14px;
+    background: rgba(45,212,191,0.04);
+    border-left: 3px solid var(--teal);
+    border-radius: 0 6px 6px 0;
+    color: var(--text);
+  }
+
+  .finding-recommendation::before {
+    content: 'Fix: ';
+    font-weight: 600;
+    color: var(--teal);
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 40px 0 20px;
+    margin-top: 60px;
+    border-top: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 13px;
+  }
+
+  .footer a {
+    color: var(--teal);
+    text-decoration: none;
+  }
+
+  .footer a:hover { text-decoration: underline; }
+
+  /* Remediation panel */
+  .remediation-panel {
+    margin-top: 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .remediation-panel summary {
+    padding: 10px 14px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--teal);
+    background: rgba(45,212,191,0.04);
+    user-select: none;
+    list-style: none;
+  }
+
+  .remediation-panel summary::-webkit-details-marker { display: none; }
+
+  .remediation-panel summary::before {
+    content: '\25b6\00a0';
+    font-size: 10px;
+  }
+
+  .remediation-panel[open] summary::before {
+    content: '\25bc\00a0';
+  }
+
+  .remediation-content {
+    padding: 14px;
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+  }
+
+  .remediation-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-dim);
+    margin: 10px 0 4px;
+  }
+
+  .remediation-label:first-child { margin-top: 0; }
+
+  .code-block {
+    position: relative;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    line-height: 1.5;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  .copy-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-dim);
+    font-size: 11px;
+    padding: 2px 8px;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .copy-btn:hover { color: var(--teal); border-color: var(--teal); }
+
+  .compliance-ref {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    background: rgba(45,212,191,0.08);
+    color: var(--teal);
+    margin-left: 6px;
+  }
+
+  .effort-badge {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .effort-low { background: rgba(34,197,94,0.12); color: var(--green); }
+  .effort-medium { background: rgba(245,158,11,0.12); color: var(--orange); }
+  .effort-high { background: rgba(239,68,68,0.12); color: var(--red); }
+
+  .remediation-doc {
+    margin-top: 10px;
+    font-size: 12px;
+  }
+
+  .remediation-doc a { color: var(--teal); text-decoration: none; }
+  .remediation-doc a:hover { text-decoration: underline; }
+
+  /* CIS coverage section */
+  .cis-section {
+    margin-top: 40px;
+    padding: 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+
+  .cis-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .cis-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 8px;
+  }
+
+  .cis-item {
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    background: rgba(45,212,191,0.06);
+    border: 1px solid rgba(45,212,191,0.1);
+    text-align: center;
+  }
+
+  /* Severity bar */
+  .severity-bar {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+  }
+
+  .severity-bar-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+  }
+
+  .severity-bar-count {
+    font-weight: 700;
+    font-size: 20px;
+  }
+
+  @media (max-width: 640px) {
+    .summary-grid { grid-template-columns: repeat(2, 1fr); }
+    .finding-header { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>Cloud Infrastructure Audit</h1>
+    <div class="meta">
+      <span>{{ report.provider.upper() }}</span>
+      <span>&middot;</span>
+      <span>Account: {{ report.account_id or 'unknown' }}</span>
+      <span>&middot;</span>
+      <span>{{ report.timestamp.strftime('%Y-%m-%d %H:%M UTC') }}</span>
+      <span>&middot;</span>
+      <span>{{ report.duration_seconds }}s</span>
+    </div>
+  </div>
+
+  <!-- Score -->
+  <div class="score-section">
+    {% set score = report.summary.score %}
+    <div class="score-ring {% if score >= 80 %}score-good{% elif score >= 50 %}score-warn{% else %}score-bad{% endif %}">
+      {{ score }}
+    </div>
+  </div>
+
+  <!-- Severity breakdown -->
+  <div class="severity-bar">
+    {% for sev in severity_order %}
+      {% set count = report.summary.by_severity.get(sev, 0) %}
+      {% if count %}
+      <div class="severity-bar-item">
+        <span class="severity severity-{{ sev.value }}">{{ sev.value }}</span>
+        <span class="severity-bar-count">{{ count }}</span>
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <!-- Summary cards -->
+  <div class="summary-grid">
+    <div class="summary-card">
+      <div class="number">{{ report.summary.resources_scanned }}</div>
+      <div class="label">Resources Scanned</div>
+    </div>
+    <div class="summary-card">
+      <div class="number">{{ report.summary.total_findings }}</div>
+      <div class="label">Issues Found</div>
+    </div>
+    <div class="summary-card">
+      <div class="number" style="color: var(--green)">{{ report.summary.checks_passed }}</div>
+      <div class="label">Checks Passed</div>
+    </div>
+    <div class="summary-card">
+      <div class="number" style="color: var(--red)">{{ report.summary.checks_failed }}</div>
+      <div class="label">Checks Failed</div>
+    </div>
+  </div>
+
+  <!-- Findings by category -->
+  {% for category, findings in by_category.items() %}
+  <h2 class="section-title">{{ category | capitalize }} ({{ findings | length }})</h2>
+
+  {% for finding in findings %}
+  <div class="finding">
+    <div class="finding-header">
+      <span class="severity severity-{{ finding.severity.value }}">{{ finding.severity.value }}</span>
+      <span class="finding-title">{{ finding.title }}</span>
+      {% for ref in finding.compliance_refs %}
+      <span class="compliance-ref">{{ ref }}</span>
+      {% endfor %}
+      <span class="finding-resource">{{ finding.resource_id }}</span>
+    </div>
+    <div class="finding-body">{{ finding.description }}</div>
+    <div class="finding-recommendation">{{ finding.recommendation }}</div>
+    {% if finding.remediation %}
+    <details class="remediation-panel">
+      <summary>How to fix</summary>
+      <div class="remediation-content">
+        <div class="remediation-label">Effort: <span class="effort-badge effort-{{ finding.remediation.effort.value }}">{{ finding.remediation.effort.value }}</span></div>
+        <div class="remediation-label">AWS CLI</div>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>{{ finding.remediation.cli }}</div>
+        <div class="remediation-label">Terraform</div>
+        <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>{{ finding.remediation.terraform }}</div>
+        <div class="remediation-doc"><a href="{{ finding.remediation.doc_url }}" target="_blank" rel="noopener">AWS Documentation &rarr;</a></div>
+      </div>
+    </details>
+    {% endif %}
+  </div>
+  {% endfor %}
+  {% endfor %}
+
+  {% if not sorted_findings %}
+  <div style="text-align: center; padding: 60px 0;">
+    <div style="font-size: 48px; margin-bottom: 16px;">&#10004;</div>
+    <h2>No issues found</h2>
+    <p style="color: var(--text-dim)">Your infrastructure passed all checks.</p>
+  </div>
+  {% endif %}
+
+  <!-- CIS Benchmark Coverage -->
+  {% if cis_controls %}
+  <div class="cis-section">
+    <div class="cis-title">CIS AWS Foundations Benchmark Coverage ({{ cis_controls | length }} controls mapped)</div>
+    <div class="cis-grid">
+      {% for ref in cis_controls %}
+      <div class="cis-item">{{ ref }}</div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Footer -->
+  <div class="footer">
+    Generated by <a href="github.com/keymealll">keymealll</a>
+  </div>
+
+</div>
+
+<script>
+function copyCode(btn){var t=btn.parentElement.textContent.replace('Copy','').trim();navigator.clipboard.writeText(t).then(function(){btn.textContent='Copied!';setTimeout(function(){btn.textContent='Copy'},1500)});}
+</script>
+</body>
+</html>
