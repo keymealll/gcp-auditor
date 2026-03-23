@@ -299,12 +299,6 @@ Starts at 100, decreases per finding:
 
 80+ is good, 50-79 needs attention, below 50 requires immediate action.
 
-## Alternatives
-
-- **Prowler** — Comprehensive multi-cloud scanner with 500+ checks
-- **Trivy** — Container and IaC scanner
-- **GCP Security Command Center** — Native GCP security service
-
 ## Roadmap
 
 - More GKE, Cloud Run, and Cloud Functions checks
