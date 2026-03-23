@@ -286,24 +286,19 @@ gcloud projects add-iam-policy-binding PROJECT_ID \
 
 gcp-auditor never modifies your infrastructure. It only makes read API calls.
 
-## Health Score
+## Risk Scoring
 
-Starts at 100, decreases per finding:
+Uses CVSS v3.1 for standardized risk assessment:
 
-| Severity | Points deducted |
-|----------|----------------|
-| Critical | -20 |
-| High | -10 |
-| Medium | -5 |
-| Low | -2 |
+| Severity | CVSS Range | Risk Level |
+|----------|------------|------------|
+| Critical | 9.0-10.0 | 🔴 |
+| High | 7.0-8.9 | 🟠  |
+| Medium | 4.0-6.9 | 🟡 |
+| Low | 0.1-3.9 | 🟢 |
 
-80+ is good, 50-79 needs attention, below 50 requires immediate action.
+Each finding includes a CVSS vector (e.g., `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H`) for detailed risk analysis.
 
-## Alternatives
-
-- **Prowler** — Comprehensive multi-cloud scanner with 500+ checks
-- **Trivy** — Container and IaC scanner
-- **GCP Security Command Center** — Native GCP security service
 
 ## Roadmap
 
