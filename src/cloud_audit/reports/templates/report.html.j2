@@ -458,11 +458,11 @@
       <summary>How to fix</summary>
       <div class="remediation-content">
         <div class="remediation-label">Effort: <span class="effort-badge effort-{{ finding.remediation.effort.value }}">{{ finding.remediation.effort.value }}</span></div>
-        <div class="remediation-label">AWS CLI</div>
+        <div class="remediation-label">gcloud CLI</div>
         <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>{{ finding.remediation.cli }}</div>
         <div class="remediation-label">Terraform</div>
         <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>{{ finding.remediation.terraform }}</div>
-        <div class="remediation-doc"><a href="{{ finding.remediation.doc_url }}" target="_blank" rel="noopener">AWS Documentation &rarr;</a></div>
+        <div class="remediation-doc"><a href="{{ finding.remediation.doc_url }}" target="_blank" rel="noopener">GCP Documentation &rarr;</a></div>
       </div>
     </details>
     {% endif %}
@@ -481,7 +481,7 @@
   <!-- CIS Benchmark Coverage -->
   {% if cis_controls %}
   <div class="cis-section">
-    <div class="cis-title">CIS AWS Foundations Benchmark Coverage ({{ cis_controls | length }} controls mapped)</div>
+    <div class="cis-title">CIS GCP Benchmark Coverage ({{ cis_controls | length }} controls mapped)</div>
     <div class="cis-grid">
       {% for ref in cis_controls %}
       <div class="cis-item">{{ ref }}</div>

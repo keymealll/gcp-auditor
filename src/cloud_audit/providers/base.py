@@ -52,4 +52,4 @@ class BaseProvider(ABC):
 
     @abstractmethod
     def get_provider_name(self) -> str:
-        """Return provider name (e.g. 'aws', 'azure')."""
+        """Return provider name (e.g. 'gcp', 'azure')."""
