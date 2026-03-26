@@ -190,11 +190,11 @@ def gcp_compute_003(provider: "GCPProvider") -> CheckResult:
                                         f"  --zone={zone_name} --keys=serial-port-enable"
                                     ),
                                     terraform=(
-                                        f'resource "google_compute_instance" "vm" {{\n'
-                                        f"  metadata = {{\n"
-                                        f'    serial-port-enable = false\n'
-                                        f"  }}\n"
-                                        f"}}"
+                                        'resource "google_compute_instance" "vm" {\n'
+                                        "  metadata = {\n"
+                                        '    serial-port-enable = false\n'
+                                        "  }\n"
+                                        "}"
                                     ),
                                     doc_url="https://cloud.google.com/compute/docs/troubleshooting/troubleshooting-using-serial-console",
                                     effort=Effort.LOW,
@@ -258,11 +258,11 @@ def gcp_compute_004(provider: "GCPProvider") -> CheckResult:
                                         f"  --zone={zone_name} --metadata=enable-oslogin=TRUE"
                                     ),
                                     terraform=(
-                                        f'resource "google_compute_instance" "vm" {{\n'
-                                        f"  metadata = {{\n"
-                                        f'    enable-oslogin = "TRUE"\n'
-                                        f"  }}\n"
-                                        f"}}"
+                                        'resource "google_compute_instance" "vm" {\n'
+                                        "  metadata = {\n"
+                                        '    enable-oslogin = "TRUE"\n'
+                                        "  }\n"
+                                        "}"
                                     ),
                                     doc_url="https://cloud.google.com/compute/docs/oslogin",
                                     effort=Effort.LOW,

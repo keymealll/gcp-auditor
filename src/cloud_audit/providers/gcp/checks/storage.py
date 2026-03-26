@@ -77,7 +77,7 @@ def gcp_storage_002(provider: "GCPProvider") -> CheckResult:
         check_name="GCS Bucket Public Access",
     )
 
-    PUBLIC_MEMBERS = {"allUsers", "allAuthenticatedUsers"}
+    public_members = {"allUsers", "allAuthenticatedUsers"}
 
     try:
         request = client.buckets().list(project=project_id)
@@ -90,7 +90,7 @@ def gcp_storage_002(provider: "GCPProvider") -> CheckResult:
                 try:
                     policy = client.buckets().getIamPolicy(bucket=bucket_name).execute()
                     for binding in policy.get("bindings", []):
-                        exposed = PUBLIC_MEMBERS.intersection(set(binding.get("members", [])))
+                        exposed = public_members.intersection(set(binding.get("members", [])))
                         if not exposed:
                             continue
 
@@ -131,7 +131,7 @@ def gcp_storage_002(provider: "GCPProvider") -> CheckResult:
                             )
                         )
                         break  # one finding per bucket is enough
-                except Exception:
+                except Exception:  # noqa: S110
                     # Skip buckets whose IAM policy we cannot read (likely a permissions issue)
                     pass
 

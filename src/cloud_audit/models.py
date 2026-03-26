@@ -25,6 +25,7 @@ class Category(str, Enum):
     COST = "cost"
     RELIABILITY = "reliability"
     PERFORMANCE = "performance"
+    COMPLIANCE = "compliance"
 
 
 class Effort(str, Enum):
