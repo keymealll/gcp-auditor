@@ -4,13 +4,13 @@ build-backend = "hatchling.build"
 
 [project]
 name = "gcp-auditor"
-version = "0.4.1"
+version = "1.0.0"
 description = "Fast, opinionated GCP security scanner. Curated checks. Zero noise. Copy-paste fixes."
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.9"
 authors = [
-    { name = "GCP Auditor Team" },
+    { name = "Abdullah Kamil", email = "abdullahkamil71@gmail.com" },
 ]
 keywords = ["gcp", "cloud", "audit", "security", "compliance", "cis", "scanner", "devops", "terraform"]
 classifiers = [
@@ -54,11 +54,11 @@ dev = [
 gcp-auditor = "cloud_audit.cli:app"
 
 [project.urls]
-Homepage = "https://github.com/abdullahkamil/gcp-auditor"
-Documentation = "https://github.com/abdullahkamil/gcp-auditor#readme"
-Repository = "https://github.com/abdullahkamil/gcp-auditor"
-Issues = "https://github.com/abdullahkamil/gcp-auditor/issues"
-Changelog = "https://github.com/abdullahkamil/gcp-auditor/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/keymealll/gcp-auditor"
+Documentation = "https://github.com/keymealll/gcp-auditor#readme"
+Repository = "https://github.com/keymealll/gcp-auditor"
+Issues = "https://github.com/keymealll/gcp-auditor/issues"
+Changelog = "https://github.com/keymealll/gcp-auditor/blob/main/CHANGELOG.md"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/cloud_audit"]

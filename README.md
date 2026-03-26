@@ -322,3 +322,7 @@ ruff format src/ tests/
 # Type check
 mypy src/
 ```
+
+## Acknowledgements
+
+This project was inspired by [cloud-audit](https://github.com/gebalamariusz/cloud-audit) by [@gebalamariusz](https://github.com/gebalamariusz). The original project provided the foundational architecture and scanner pattern. This fork extends it with GCP-specific checks, CVSS v3.1 scoring, additional report formats, and expanded coverage across GCP services.
